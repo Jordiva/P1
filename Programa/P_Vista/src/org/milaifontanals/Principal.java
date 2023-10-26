@@ -8,45 +8,65 @@ import java.awt.event.ActionListener;
 import p_interficiepersistencia.GestorBDExceptionTOT;
 
 public class Principal extends JFrame implements ActionListener {
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-    private JTable table;
-
-    private BDGeneral bd;
+    private JTextField userField;
+    private JPasswordField passField;
+    private JLabel userLabel;
+    private JLabel passLabel;
+    private JButton loginButton;
+    //private BDGeneral bd;
 
     //LOGIN
     public Principal() {
-        // Configurar el formulario de inicio de sesión
-        setTitle("Inicio de sesión");
+        
+        setTitle("WikiLoc Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 200);
+        setSize(400, 200);
         setLocationRelativeTo(null);
-        setBackground(new java.awt.Color(23, 208, 119));
+        setBackground(new Color(255, 255, 255));
+        setLayout(new BorderLayout());
 
-        // Crear los campos de entrada de texto y el botón de inicio de sesión
-        JPanel panel = new JPanel(new GridLayout(5, 3));
-        usernameField = new JTextField();
-        passwordField = new JPasswordField();
-        JButton loginButton = new JButton("Iniciar sesión");
-        loginButton.addActionListener(this);
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(3, 2));
 
-        // Agregar los componentes al panel
-        panel.add(new JLabel("Nombre de usuario:"));
-        panel.add(usernameField);
-        panel.add(new JLabel("Contraseña:"));
-        panel.add(passwordField);
+        userLabel = new JLabel("Username:");
+        userField = new JTextField();
+        passLabel = new JLabel("Password:");
+        passField = new JPasswordField();
+        loginButton = new JButton("Login");
+
+        panel.add(userLabel);
+        panel.add(userField);
+        panel.add(passLabel);
+        panel.add(passField);
         panel.add(loginButton);
 
-        // Agregar el panel al formulario de inicio de sesión
-        add(panel);
-        setVisible(true);
+        JLabel titleLabel = new JLabel("WikiLoc");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        userLabel.setHorizontalAlignment(JLabel.CENTER);
+        userLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        passLabel.setHorizontalAlignment(JLabel.CENTER);
+        passLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+
+
+        add(titleLabel, BorderLayout.NORTH);
+        add(panel, BorderLayout.CENTER);
+        add(loginButton, BorderLayout.SOUTH);
+        
+        loginButton.addActionListener(this);
+        
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // Verificar si el nombre de usuario y la contraseña son correctos
-        String username = usernameField.getText();
-        String password = new String(passwordField.getPassword());
+        String username = userField.getText();
+        String password = new String(passField.getPassword());
+        
+        /*
         boolean loginSuccessful = false; 
         try {
         loginSuccessful = bd.validarLogn(username, password);
@@ -54,13 +74,15 @@ public class Principal extends JFrame implements ActionListener {
             e1.printStackTrace();
             System.out.println("Error al validar el login");
         }
+        */
 
-
-        if (loginSuccessful) {
+        if (username.equals("admin") && password.equals("admin")) {
             // Si el inicio de sesión es correcto, cerrar el formulario de inicio de sesión y abrir el otro frame
-            dispose();
-            OtherFrame otherFrame = new OtherFrame(username);
-            otherFrame.setVisible(true);
+            
+            //alerta de login correcto
+            JOptionPane.showMessageDialog(this, "Login correcto", "Login", JOptionPane.INFORMATION_MESSAGE);
+
+           
         } else {
             // Si el inicio de sesión es incorrecto, mostrar un mensaje de error
             JOptionPane.showMessageDialog(this, "Nombre de usuario o contraseña incorrectos", "Error de inicio de sesión", JOptionPane.ERROR_MESSAGE);
@@ -75,34 +97,14 @@ public class Principal extends JFrame implements ActionListener {
         loginFrame.setVisible(true);
         //crear la conexion con la base de datos
         
+        /*
         try {
             loginFrame.bd = new BDGeneral("Oracle.properties");
         } catch (GestorBDExceptionTOT e) {
             System.out.println("Error al crear la conexion con la base de datos");
             e.printStackTrace();
         }
-
-    }
-}
-
-class OtherFrame extends JFrame {
-
-    private JTable jTable;
-
-    public OtherFrame( String username) {
-        // Configurar el otro frame
-        setTitle("Otro frame");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 150);
-        setLocationRelativeTo(null);
-
-        // Agregar un mensaje al otro frame
-        JLabel label = new JLabel("¡Bienvenido!     " +  username);
-        label.setHorizontalAlignment(JLabel.CENTER);
-        add(label);
-        
-
-        
+         */
 
     }
 }
