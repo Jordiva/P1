@@ -1,5 +1,6 @@
 package org.milaifontanals;
 import java.sql.Clob;
+import java.sql.Timestamp;
 
 public class Ruta {
 
@@ -19,6 +20,12 @@ public class Ruta {
     private int sumaValoracioSeguretat;
     private int sumaValoracioPaisatge;
     private int valoracioMitjana;
+    private Timestamp dataCreacio;
+
+
+  
+
+
 
     public Ruta() {
     }
@@ -69,7 +76,7 @@ public class Ruta {
 
     public Ruta(int id_Ruta, String usuari, String titol, String descripcio, Clob text, int distancia, int temps,
             int desnivellPositiu, int desnivellNegatiu, int dificultat, int numPersones, int sumaValoracions,
-            int numPersonesFetRuta, int sumaValoracioSeguretat, int sumaValoracioPaisatge) throws ExceptionTOT {
+            int numPersonesFetRuta, int sumaValoracioSeguretat, int sumaValoracioPaisatge,Timestamp dataCreacio) throws ExceptionTOT {
         setId_Ruta(id_Ruta);
         setUsuari(usuari);
         setTitol(titol);
@@ -85,7 +92,7 @@ public class Ruta {
         setNumPersonesFetRuta(numPersonesFetRuta);
         setSumaValoracioSeguretat(sumaValoracioSeguretat);
         setSumaValoracioPaisatge(sumaValoracioPaisatge);
-        
+        setDataCreacio(dataCreacio);
     }
 
 
@@ -127,6 +134,15 @@ public class Ruta {
     }
 
 
+    public Timestamp getDataCreacio() {
+        return dataCreacio;
+    }
+
+
+
+    public void setDataCreacio(Timestamp dataCreacio) {
+        this.dataCreacio = dataCreacio;
+    }
 
     public int getId_Ruta() {
         return id_Ruta;
@@ -278,6 +294,19 @@ public class Ruta {
 
     public void setValoracioMitjana(int valoracioMitjana) {
         this.valoracioMitjana = valoracioMitjana;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Ruta [id_Ruta=" + id_Ruta + ", usuari=" + usuari + ", titol=" + titol + ", descripcio=" + descripcio
+                + ", text=" + text + ", distancia=" + distancia + ", temps=" + temps + ", desnivellPositiu="
+                + desnivellPositiu + ", desnivellNegatiu=" + desnivellNegatiu + ", dificultat=" + dificultat
+                + ", numPersones=" + numPersones + ", sumaValoracions=" + sumaValoracions + ", numPersonesFetRuta="
+                + numPersonesFetRuta + ", sumaValoracioSeguretat=" + sumaValoracioSeguretat + ", sumaValoracioPaisatge="
+                + sumaValoracioPaisatge + ", valoracioMitjana=" + valoracioMitjana + ", dataCreacio=" + dataCreacio
+                + "]";
     }
 
     

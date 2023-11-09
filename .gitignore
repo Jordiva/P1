@@ -2,3 +2,6 @@
 /Programa/P_Model/build/
 /Programa/P_SQL/build/
 /Programa/P_Vista/build/
+/Programa/P_Model/dist/
+/Programa/P_InterficiePersistencia/dist/
+/Programa/P_SQL/dist/

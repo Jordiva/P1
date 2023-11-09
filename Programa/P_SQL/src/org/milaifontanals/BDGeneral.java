@@ -3,6 +3,7 @@ package org.milaifontanals;
 import java.sql.Statement;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -60,7 +61,6 @@ final public class BDGeneral implements IGestorBDWiki{
             new BDGeneral();
         }
         return conn;
-
     }
 
     public void tancar() throws GestorBDExceptionTOT {
@@ -94,12 +94,12 @@ final public class BDGeneral implements IGestorBDWiki{
         }
     }
 
-    public Boolean validarLogn(String email, String password) throws GestorBDExceptionTOT {
+    public Boolean validarLogn(String login, String password) throws GestorBDExceptionTOT {
         
         PreparedStatement ps = null;
         try {
-            ps = conn.prepareStatement("SELECT * FROM USUARI WHERE EMAIL = ? AND contrasenya = ?");
-            ps.setString(1, email);
+            ps = conn.prepareStatement("SELECT * FROM USUARI WHERE LOGIN = ? AND contrasenya = ?");
+            ps.setString(1, login);
             ps.setString(2, password);
             ps.executeQuery();
             ResultSet rs = ps.executeQuery();
@@ -134,10 +134,11 @@ final public class BDGeneral implements IGestorBDWiki{
                 int numPersonesFetRuta = rs.getInt("NUM_PERSONES_FET_RUTA");
                 int sumaValoracioSeguretat = rs.getInt("SUMA_VALORACION_SAGURETAT");
                 int sumaValoracioPaisatge = rs.getInt("SUMA_VALORACIO_PAISATGE");
+                Timestamp datacreacio = rs.getTimestamp("MOMENT_TEMP");
 
                 rr.add(new Ruta( id,  usuari,  titol,  descripcio,  text,  distancia,  temps,
                          desnivellPositiu,  desnivellNegatiu,  dificultat,  numPersones,  sumaValoracions,
-                         numPersonesFetRuta,  sumaValoracioSeguretat,  sumaValoracioPaisatge));
+                         numPersonesFetRuta,  sumaValoracioSeguretat,  sumaValoracioPaisatge,datacreacio));
             }
             
         } catch (SQLException ex) {
@@ -174,6 +175,7 @@ final public class BDGeneral implements IGestorBDWiki{
                 float latitud = rs.getFloat("LATITUD");
                 float longitud = rs.getFloat("LONGITUD");
                 float altitud = rs.getFloat("ALTITUD");
+                
 
                 pp.add(new Punts(numPunt, id_ruta, id_tipus, nom, descripcio, latitud, longitud, altitud));
             }
@@ -336,15 +338,40 @@ final public class BDGeneral implements IGestorBDWiki{
         PreparedStatement ps = null;
 
         try {
+            //borrar puntos 
+            ps = conn.prepareStatement("DELETE FROM PUNT WHERE id_ruta = ?");
+            ps.setInt(1, idRuta);
+
+            ps.executeUpdate(); 
+            ps.close();
+
+
+
+            //borar companys de comentaris 
+            ps = conn.prepareStatement("DELETE FROM COMPANYS WHERE id_comentar = ? ");
+            ps.setInt(1, idRuta);
+
+            ps.executeUpdate();
+            ps.close();
+
+
+            //borrar comentaris 
+            ps = conn.prepareStatement("DELETE FROM COMENTARI WHERE id_ruta = ?");
+            ps.setInt(1, idRuta);
+
+            ps.executeUpdate();
+
+            ps.close();
+
             ps = conn.prepareStatement("DELETE FROM RUTA WHERE id_ruta = ? AND usu_login = ?");
             ps.setInt(1, idRuta);
             ps.setString(2, usuari);
 
-            if(ps.executeUpdate() != 1){
-                desferCanvis();
-                return false;
-            }                
-            return true;
+
+            if(ps.executeUpdate() == 1){
+                return true;
+            }
+            return false;
 
         } catch (SQLException e) {
             throw new GestorBDExceptionTOT("Error al Borrar una ruta: " + e.getMessage());

@@ -1,3 +1,5 @@
+package org.milaifontanals.CodiAsecas;
+
 import javax.swing.*;
 import java.awt.*;
 

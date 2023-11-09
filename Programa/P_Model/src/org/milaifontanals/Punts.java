@@ -2,6 +2,7 @@ package org.milaifontanals;
 
 
 import java.sql.Blob;
+import java.sql.Timestamp;
 
 public class Punts  {
 
@@ -17,15 +18,22 @@ public class Punts  {
     private float longitud;
     private float altitud;
 
+    
 
     public Punts() {
     }
 
 
     public Punts(int numPunt, int id_ruta, int id_tipus, String nom, String descripcio, float latitud, float longitud,
-            float altitud) {
+            float altitud ) throws ExceptionTOT {
         setNumPunt(numPunt);
-
+        setId_ruta(id_ruta);
+        setId_tipus(id_tipus);
+        setNom(nom);
+        setDescripcio(descripcio);
+        setLatitud(latitud);
+        setLongitud(longitud);
+        setAltitud(altitud);    
     }
 
 
@@ -160,4 +168,5 @@ public class Punts  {
     public void setId_tipus(int id_tipus) {
         this.id_tipus = id_tipus;
     }
+
 }

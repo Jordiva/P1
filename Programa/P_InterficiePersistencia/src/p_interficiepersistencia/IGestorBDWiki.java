@@ -44,7 +44,7 @@ public interface IGestorBDWiki {
      * @return True si existeix, false si no.
      * @throws GestorBDExceptionTOT
      */
-    Boolean validarLogn(String email, String password) throws GestorBDExceptionTOT;
+    Boolean validarLogn(String login, String password) throws GestorBDExceptionTOT;
     
     /**
      * Retorna la llista de rutes del usuari.
