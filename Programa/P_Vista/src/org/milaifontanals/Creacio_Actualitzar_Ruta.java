@@ -6,13 +6,20 @@ package org.milaifontanals;
 
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.sql.Clob;
 import java.sql.SQLException;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
+
+import p_interficiepersistencia.GestorBDExceptionTOT;
 
 /**
  *
@@ -22,17 +29,28 @@ public class Creacio_Actualitzar_Ruta extends javax.swing.JFrame {
 
     BDGeneral BD;
     JTable TableRuta;
+    String usuString;
     /**
      * Creates new form Creacio_Actualitzar_Ruta
      */
-     public Creacio_Actualitzar_Ruta() {
+    public Creacio_Actualitzar_Ruta() {
         initComponents();        
     }
-    
+
+    public Creacio_Actualitzar_Ruta(BDGeneral BD , String usu,JTable TableRuta){
+        this.BD = BD;
+        this.TableRuta = TableRuta;
+        this.usuString = usu;
+        initComponents();
+        setLocationRelativeTo(null);
+    }
+
+    Ruta RutaDelUsuari;
     
     public Creacio_Actualitzar_Ruta(Ruta ruta,BDGeneral BD ,JTable TableRuta) {
         this.BD = BD;
         this.TableRuta = TableRuta;
+        this.RutaDelUsuari = ruta;
         initComponents();
         setLocationRelativeTo(null);
         OmpleInfoUsuariDelaRuta(ruta);
@@ -40,7 +58,7 @@ public class Creacio_Actualitzar_Ruta extends javax.swing.JFrame {
 
     private void OmpleInfoUsuariDelaRuta(Ruta ruta){
 
-        
+        System.out.println(ruta.toString());
 
         CATitol.setText(ruta.getTitol());
         CADescripcio.setText(ruta.getDescripcio());
@@ -182,8 +200,18 @@ public class Creacio_Actualitzar_Ruta extends javax.swing.JFrame {
         btnCancelar.setText("Cancelar");
 
         btnActualitzar.setText("Actualitzar");
+        btnActualitzar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualitzarActionPerformed(evt);
+            }
+        });
 
         btnCrear.setText("Crear");
+        btnCrear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -261,13 +289,13 @@ public class Creacio_Actualitzar_Ruta extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private boolean Ftitol = false;
-    private boolean FDescripcio = false;
-    private boolean FText = false;
-    private boolean FDistancia = false;
-    private boolean FTemps = false;
-    private boolean FDpositiu = false;
-    private boolean FDnagatiu = false;
+    private boolean Ftitol = true;
+    private boolean FDescripcio = true;
+    private boolean FText = true;
+    private boolean FDistancia = true;
+    private boolean FTemps = true;
+    private boolean FDpositiu = true;
+    private boolean FDnagatiu = true;
 
     boolean isInteger(String text) {
         try {
@@ -346,6 +374,178 @@ public class Creacio_Actualitzar_Ruta extends javax.swing.JFrame {
             CADescripcio.setBackground(Color.white);    
 
     }//GEN-LAST:event_CADescripcioKeyReleased
+
+    private static Clob stringToClob(String data) throws SQLException, IOException {
+        char[] charData = data.toCharArray();
+        CharArrayReader charArrayReader = new CharArrayReader(charData);
+
+        return new Clob() {
+            @Override
+            public long length() throws SQLException {
+                return charData.length;
+            }
+
+            @Override
+            public String getSubString(long pos, int length) throws SQLException {
+                return new String(charData, (int) pos - 1, length);
+            }
+
+            @Override
+            public Reader getCharacterStream() throws SQLException {
+                return charArrayReader;
+            }
+
+            // Implementar otros métodos de la interfaz Clob según sea necesario
+            // ...
+
+            @Override
+            public void free() throws SQLException {
+                // Liberar recursos si es necesario
+                try {
+                    charArrayReader.close();
+                } catch (Exception e) {
+                    throw new SQLException("Error al cerrar CharArrayReader", e);
+                }
+            }
+
+            @Override
+            public InputStream getAsciiStream() throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'getAsciiStream'");
+            }
+
+            @Override
+            public long position(String searchstr, long start) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'position'");
+            }
+
+            @Override
+            public long position(Clob searchstr, long start) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'position'");
+            }
+
+            @Override
+            public int setString(long pos, String str) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'setString'");
+            }
+
+            @Override
+            public int setString(long pos, String str, int offset, int len) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'setString'");
+            }
+
+            @Override
+            public OutputStream setAsciiStream(long pos) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'setAsciiStream'");
+            }
+
+            @Override
+            public Writer setCharacterStream(long pos) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'setCharacterStream'");
+            }
+
+            @Override
+            public void truncate(long len) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'truncate'");
+            }
+
+            @Override
+            public Reader getCharacterStream(long pos, long length) throws SQLException {
+                throw new UnsupportedOperationException("Unimplemented method 'getCharacterStream'");
+            }
+        };
+    }
+    
+
+    private void btnActualitzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualitzarActionPerformed
+
+        if(Ftitol && FDescripcio && FText && FDistancia && FTemps && FDpositiu && FDnagatiu){
+
+            Ruta ruta = new Ruta();
+            try {
+                ruta.setId_Ruta(RutaDelUsuari.getId_Ruta());
+                ruta.setTitol(CATitol.getText());
+                ruta.setDescripcio(CADescripcio.getText());
+                try {
+                    ruta.setText(stringToClob(CAText.getText()));
+                } catch (SQLException | IOException e) {
+                    e.printStackTrace();
+                }
+                ruta.setDistancia(Integer.parseInt(CADistancia.getText()));
+                ruta.setTemps(Integer.parseInt(CATemps.getText()));
+                ruta.setDesnivellPositiu(Integer.parseInt(CADPositiu.getText()));
+                ruta.setDesnivellNegatiu(Integer.parseInt(CADNegatiu.getText()));
+                ruta.setDificultat(Integer.parseInt(CADifucultat.getSelectedItem().toString()));
+                System.out.println(ruta.toString());
+                boolean fet = BD.modificarRuta(ruta,CAText.getText());
+                if(fet){
+                    BD.validarCanvis();
+                    JOptionPane.showMessageDialog(null, "Ruta Actualitzada", "Info", JOptionPane.INFORMATION_MESSAGE);
+                    this.dispose();
+                    RutesUsuari.OmpleInfoUsuari(RutaDelUsuari.getUsuari());
+                    //TableRuta.setModel(BD.getRutesDelUsuari(RutaDelUsuari.getUsuari()));
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Error al Actualitzar la ruta", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException | ExceptionTOT e) {
+                System.out.println("F al Actualtzar la ruta");
+            } catch (GestorBDExceptionTOT e) {
+                e.printStackTrace();
+                System.out.println("Error al Actualitzar ruta BD");
+            }    
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Falten camps per omplir", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnActualitzarActionPerformed
+
+    private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
+        
+        if(Ftitol && FDescripcio && FText && FDistancia && FTemps && FDpositiu && FDnagatiu){
+            
+            Ruta ruta = new Ruta();
+
+                try {
+                    //ruta.setId_Ruta(RutaDelUsuari.getId_Ruta());
+                    ruta.setTitol(CATitol.getText());
+                    ruta.setUsuari(usuString);
+                    ruta.setDescripcio(CADescripcio.getText());
+                    try {
+                        ruta.setText(stringToClob(CAText.getText()));
+                    } catch (SQLException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    ruta.setDistancia(Integer.parseInt(CADistancia.getText()));
+                    ruta.setTemps(Integer.parseInt(CATemps.getText()));
+                    ruta.setDesnivellPositiu(Integer.parseInt(CADPositiu.getText()));
+                    ruta.setDesnivellNegatiu(Integer.parseInt(CADNegatiu.getText()));
+                    ruta.setDificultat(Integer.parseInt(CADifucultat.getSelectedItem().toString()));
+                    boolean fet = BD.afagirRuta(ruta, CAText.getText());
+                    if(fet){
+                        BD.validarCanvis();
+                        JOptionPane.showMessageDialog(null, "Ruta Creada", "Info", JOptionPane.INFORMATION_MESSAGE);
+                        this.dispose();
+                        RutesUsuari.OmpleInfoUsuari(usuString);
+                        //TableRuta.setModel(BD.getRutesDelUsuari(RutaDelUsuari.getUsuari()));
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Error al Crea la ruta", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+
+                } catch (NumberFormatException | ExceptionTOT e) {
+                    e.printStackTrace();
+                    System.out.println("Error Creacio ruta");
+                } catch (GestorBDExceptionTOT e) {
+                    e.printStackTrace();
+                }            
+
+        }
+
+
+
+
+    }//GEN-LAST:event_btnCrearActionPerformed
 
 
 

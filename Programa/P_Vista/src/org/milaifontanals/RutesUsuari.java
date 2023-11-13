@@ -22,13 +22,13 @@ public class RutesUsuari extends javax.swing.JFrame {
      * Creates new form Rutesusuari
      */
 
-    private List<Ruta> ruteList = null;
+    private static List<Ruta> ruteList = null;
     
    public RutesUsuari() {
         initComponents();
     }
     
-    private BDGeneral BD;
+    private static BDGeneral BD;
     
     public RutesUsuari(String usuari , BDGeneral BD) {
         this.BD = BD;
@@ -39,7 +39,7 @@ public class RutesUsuari extends javax.swing.JFrame {
     }
 
 
-    private void OmpleInfoUsuari(String usuari) {
+    public static void OmpleInfoUsuari(String usuari) {
         
         try {
             ruteList = BD.getRutesDelUsuari(usuari);
@@ -107,6 +107,7 @@ public class RutesUsuari extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -207,7 +208,9 @@ public class RutesUsuari extends javax.swing.JFrame {
 
         jLabel2.setText("Data de Creacio");
 
-        jLabel3.setText("Entre");
+        jLabel3.setText("Entre:");
+
+        jButton1.setText("Eliminar Filtre");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -230,6 +233,8 @@ public class RutesUsuari extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(255, 255, 255)
                 .addComponent(BtnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -245,7 +250,9 @@ public class RutesUsuari extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(BtnBuscar)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(BtnBuscar)
+                    .addComponent(jButton1))
                 .addContainerGap(8, Short.MAX_VALUE))
         );
 
@@ -288,19 +295,16 @@ public class RutesUsuari extends javax.swing.JFrame {
 
     private void BtnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnCrearActionPerformed
         // TODO add your handling code here:
-
-     
-
-        
-
+        Creacio_Actualitzar_Ruta r = new Creacio_Actualitzar_Ruta(BD,LbelUsuario.getText(),tablaRutes);
+        r.setVisible(true);
+        r.btnActualitzar.setEnabled(false);
+        r.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        r.setTitle("Creacio");
 
 
     }//GEN-LAST:event_BtnCrearActionPerformed
 
     private void BntActualitzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BntActualitzarActionPerformed
-        // TODO add your handling code here:
-
-
 
         int fila = tablaRutes.getSelectedRow();
 
@@ -437,11 +441,12 @@ public class RutesUsuari extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BntActualitzar;
-    private javax.swing.JButton BtnBorra;
+    private static javax.swing.JButton BntActualitzar;
+    private static javax.swing.JButton BtnBorra;
     private javax.swing.JButton BtnBuscar;
-    private javax.swing.JButton BtnCrear;
-    private javax.swing.JLabel LbelUsuario;
+    private static javax.swing.JButton BtnCrear;
+    private static javax.swing.JLabel LbelUsuario;
+    private javax.swing.JButton jButton1;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JLabel jLabel1;
@@ -452,7 +457,7 @@ public class RutesUsuari extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField lbBusqueda;
-    private javax.swing.JTable tablaRutes;
+    private static javax.swing.JTable tablaRutes;
     private javax.swing.JTable tablepunts;
     // End of variables declaration//GEN-END:variables
 }

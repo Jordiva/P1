@@ -70,7 +70,7 @@ public interface IGestorBDWiki {
      * Afegeix una ruta a la base de dades.
      * @throws GestorBDExceptionTOT
      */
-    boolean afagirRuta(Ruta ruta) throws GestorBDExceptionTOT, ExceptionTOT;
+    boolean afagirRuta(Ruta ruta,String cLob) throws GestorBDExceptionTOT, ExceptionTOT;
     
     /**
      * Afegeix un punt a la base de dades.
@@ -82,7 +82,7 @@ public interface IGestorBDWiki {
      * Modifica una ruta que digui el usuari a la base de dades.
      * @throws GestorBDExceptionTOT
      */
-    boolean modificarRuta(Ruta ruta) throws GestorBDExceptionTOT, ExceptionTOT;
+    boolean modificarRuta(Ruta ruta , String txt) throws GestorBDExceptionTOT, ExceptionTOT;
 
 
     /**

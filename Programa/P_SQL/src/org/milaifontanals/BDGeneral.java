@@ -194,30 +194,33 @@ final public class BDGeneral implements IGestorBDWiki{
         return pp;
     }
 
+
+
+
     @Override
-    public boolean afagirRuta(Ruta ruta) throws GestorBDExceptionTOT, ExceptionTOT {
+    public boolean afagirRuta(Ruta ruta, String clob) throws GestorBDExceptionTOT, ExceptionTOT {
         
         PreparedStatement ps = null;
 
         try {
+            Clob Clob = stringToClob( clob, conn);
             ps = conn.prepareStatement("INSERT INTO RUTA (usu_login, titol, descripcio, text, distancia, temps, desnivell_positiu, desnivell_negatiu, dificultat) VALUES (?,?,?,?,?,?,?,?,?)");
             ps.setString(1, ruta.getUsuari());
             ps.setString(2, ruta.getTitol());
             ps.setString(3, ruta.getDescripcio());
-            ps.setClob(4, ruta.getText());
+            ps.setClob(4, Clob);
             ps.setInt(5, ruta.getDistancia());
             ps.setInt(6, ruta.getTemps());
             ps.setInt(7, ruta.getDesnivellPositiu());
             ps.setInt(8, ruta.getDesnivellNegatiu());
             ps.setInt(9, ruta.getDificultat());
             
-            if(ps.executeUpdate() != 1){
-                desferCanvis();
-                return false;
+            if(ps.executeUpdate() == 1){
+                return true;
             }                
-            return true;
+            return false;
 
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             throw new GestorBDExceptionTOT("Error al Crear la ruta: " + e.getMessage());
         } finally {
             if (ps != null) {
@@ -265,31 +268,52 @@ final public class BDGeneral implements IGestorBDWiki{
 
     }
 
+    private static Clob stringToClob(String data, Connection connection) throws SQLException, IOException {
+        // Convertir la cadena a un objeto CLOB
+        Clob clob = connection.createClob();
+        clob.setString(1, data);
+        return clob;
+    }
+
     @Override
-    public boolean modificarRuta(Ruta ruta) throws GestorBDExceptionTOT, ExceptionTOT {
+    public boolean modificarRuta(Ruta ruta,String txt) throws GestorBDExceptionTOT, ExceptionTOT {
         
         PreparedStatement ps = null;
 
+        
+
         try {//componentes de ruta RUTA (usu_login, titol, descripcio, text, distancia, temps, desnivell_positiu, desnivell_negatiu, dificultat)
             ps = conn.prepareStatement("UPDATE RUTA SET titol = ?, descripcio = ?, text = ?, distancia = ?, temps = ?, desnivell_positiu = ?, desnivell_negatiu = ?, dificultat = ? WHERE id_ruta = ?");
-            ps.setString(1, ruta.getTitol());
-            ps.setString(2, ruta.getDescripcio());
-            ps.setClob(3, ruta.getText());
-            ps.setInt(4, ruta.getDistancia());
-            ps.setInt(5, ruta.getTemps());
-            ps.setInt(6, ruta.getDesnivellPositiu());
-            ps.setInt(7, ruta.getDesnivellNegatiu());
-            ps.setInt(8, ruta.getDificultat());
-            ps.setInt(9, ruta.getId_Ruta());
+            
 
-            if(ps.executeUpdate() != 1){
-                desferCanvis();
-                return false;
+            String titol = ruta.getTitol();
+            String desc = ruta.getDescripcio();
+            Clob clob = stringToClob( txt, conn);
+            int dist = ruta.getDistancia();
+            int teps = ruta.getTemps();
+            int despo = ruta.getDesnivellPositiu();
+            int desNo = ruta.getDesnivellNegatiu();
+            int dif = ruta.getDificultat();
+            int id_ruta = ruta.getId_Ruta();
+
+            ps.setString(1, titol);
+            ps.setString(2, desc);
+            ps.setClob(3, clob);
+            ps.setInt(4, dist);
+            ps.setInt(5, teps);
+            ps.setInt(6,despo);
+            ps.setInt(7, desNo);
+            ps.setInt(8, dif);
+            ps.setInt(9, id_ruta);
+
+            if(ps.executeUpdate() == 1){
+                return true;
             }                
-            return true;
 
         } catch (SQLException e) {
             throw new GestorBDExceptionTOT("Error al Modificar una ruta: " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             if (ps != null) {
                 try {
@@ -299,6 +323,7 @@ final public class BDGeneral implements IGestorBDWiki{
                 }
             }
         }
+    return false;
 
     }
 
@@ -309,7 +334,7 @@ final public class BDGeneral implements IGestorBDWiki{
         try {
             
             ps = conn.createStatement();
-             
+            
             ResultSet rs = ps.executeQuery("SELECT id_tipus , nom FROM TIPUS");
             while(rs.next()) {
                 int id = rs.getInt("ID_TIPUS");
