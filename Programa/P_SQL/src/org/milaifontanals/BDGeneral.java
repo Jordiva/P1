@@ -4,6 +4,7 @@ import java.sql.Statement;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /*
@@ -478,7 +480,112 @@ final public class BDGeneral implements IGestorBDWiki{
     }
 
 
-    
+    public static String construirConsulta(String usuario, String titulo, String fechaInicio, String fechaFin) {
+        StringBuilder consulta = new StringBuilder("SELECT * FROM ruta WHERE");
+
+        // Verificar si se proporciona el usuario (campo obligatorio)
+        if (Objects.isNull(usuario) || usuario.isEmpty()) {
+            throw new IllegalArgumentException("El campo 'usuario' es obligatorio.");
+        } else {
+            consulta.append(" usu_login = '").append(usuario).append("'");
+        }
+
+        // Verificar si se proporciona el título
+        if (Objects.nonNull(titulo) && !titulo.isEmpty()) {
+            consulta.append(" AND titol = '").append(titulo).append("'");
+        }
+
+        // Verificar si se proporciona la fecha de inicio y fin
+        if (Objects.nonNull(fechaInicio) && !fechaInicio.isEmpty() && Objects.nonNull(fechaFin) && !fechaFin.isEmpty()) {
+            consulta.append(" AND moment_temp BETWEEN '").append(fechaInicio).append("' AND '").append(fechaFin).append("'");
+        } else if (Objects.nonNull(fechaInicio) && !fechaInicio.isEmpty()) {
+            consulta.append(" AND moment_temp >= '").append(fechaInicio).append("'");
+        } else if (Objects.nonNull(fechaFin) && !fechaFin.isEmpty()) {
+            consulta.append(" AND moment_temp <= '").append(fechaFin).append("'");
+        }
+
+        return consulta.toString();
+    }
+
+    public static String construirConsulta(String titulo, String fechaInicio, String fechaFin) {
+        StringBuilder consulta = new StringBuilder("SELECT * FROM ruta WHERE");
+
+        // Verificar si se proporciona el título
+        if (Objects.nonNull(titulo) && !titulo.isEmpty()) {
+            consulta.append(" titulo = '").append(titulo).append("'");
+        }
+
+        // Verificar si se proporciona la fecha de inicio y fin
+        if (Objects.nonNull(fechaInicio) && !fechaInicio.isEmpty() && Objects.nonNull(fechaFin) && !fechaFin.isEmpty()) {
+            // Agregar "AND" si ya se ha especificado un título
+            if (consulta.toString().endsWith("WHERE")) {
+                consulta.append(" moment_temp BETWEEN '").append(fechaInicio).append("' AND '").append(fechaFin).append("'");
+            } else {
+                consulta.append(" AND moment_temp BETWEEN '").append(fechaInicio).append("' AND '").append(fechaFin).append("'");
+            }
+        } else if (Objects.nonNull(fechaInicio) && !fechaInicio.isEmpty()) {
+            // Agregar "AND" si ya se ha especificado un título
+            if (!consulta.toString().endsWith("WHERE")) {
+                consulta.append(" AND");
+            }
+            consulta.append(" moment_temp >= '").append(fechaInicio).append("'");
+        } else if (Objects.nonNull(fechaFin) && !fechaFin.isEmpty()) {
+            // Agregar "AND" si ya se ha especificado un título
+            if (!consulta.toString().endsWith("WHERE")) {
+                consulta.append(" AND");
+            }
+            consulta.append(" moment_temp <= '").append(fechaFin).append("'");
+        }
+
+        return consulta.toString();
+    }
+
+    @Override
+    public List<Ruta> getRutesFiltrades(String Titol, String data1, String data2, String usuario)
+            throws GestorBDExceptionTOT, ExceptionTOT {
+        List<Ruta> ruteList = new ArrayList<>();
+
+        String consulta = construirConsulta(usuario,Titol, data1, data2);
+        
+        PreparedStatement ps = null;
+        try {
+            ps = conn.prepareStatement(consulta);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("ID_RUTA");
+                String usuari = rs.getString("USU_LOGIN");
+                String titol = rs.getString("TITOL");
+                String descripcio = rs.getString("DESCRIPCIO");
+                Clob text = rs.getClob("TEXT");
+                int distancia = rs.getInt("DISTANCIA");
+                int temps = rs.getInt("TEMPS");
+                int desnivellPositiu = rs.getInt("DESNIVELL_POSITIU");
+                int desnivellNegatiu = rs.getInt("DESNIVELL_NEGATIU");
+                int dificultat = rs.getInt("DIFICULTAT");
+                int numPersones = rs.getInt("NUM_PERSONES");
+                int sumaValoracions = rs.getInt("SUMA_VALORACIONS");
+                int numPersonesFetRuta = rs.getInt("NUM_PERSONES_FET_RUTA");
+                int sumaValoracioSeguretat = rs.getInt("SUMA_VALORACION_SAGURETAT");
+                int sumaValoracioPaisatge = rs.getInt("SUMA_VALORACIO_PAISATGE");
+                Timestamp datacreacio = rs.getTimestamp("MOMENT_TEMP");
+
+                ruteList.add(new Ruta( id,  usuari,  titol,  descripcio,  text,  distancia,  temps,
+                         desnivellPositiu,  desnivellNegatiu,  dificultat,  numPersones,  sumaValoracions,
+                         numPersonesFetRuta,  sumaValoracioSeguretat,  sumaValoracioPaisatge,datacreacio));
+            }
+            return ruteList;
+        } catch (SQLException ex) {
+            throw new GestorBDExceptionTOT("Error en Recuperar els valors del usuari de les Rutes: " + ex.getMessage());
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException ex) {
+                    throw new GestorBDExceptionTOT("Error en tancar el PreparedStatement: " + ex.getMessage());
+                }
+            }
+        }
+    }
 
 }
 

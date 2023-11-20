@@ -4,6 +4,8 @@
  */
 package org.milaifontanals;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -23,6 +25,7 @@ public class RutesUsuari extends javax.swing.JFrame {
      */
 
     private static List<Ruta> ruteList = null;
+    private static String usuString;
     
    public RutesUsuari() {
         initComponents();
@@ -32,6 +35,7 @@ public class RutesUsuari extends javax.swing.JFrame {
     
     public RutesUsuari(String usuari , BDGeneral BD) {
         this.BD = BD;
+        this.usuString  = usuari;
         initComponents();
         setLocationRelativeTo(null);
         setTitle("WikiLoc - Rutes de l'usuari " + usuari);    
@@ -203,6 +207,11 @@ public class RutesUsuari extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Busqueda"));
 
         BtnBuscar.setText("Buscar");
+        BtnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnBuscarActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Nom / Titol");
 
@@ -211,6 +220,11 @@ public class RutesUsuari extends javax.swing.JFrame {
         jLabel3.setText("Entre:");
 
         jButton1.setText("Eliminar Filtre");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -221,15 +235,15 @@ public class RutesUsuari extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lbBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(255, 255, 255)
                 .addComponent(BtnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -294,7 +308,6 @@ public class RutesUsuari extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnCrearActionPerformed
-        // TODO add your handling code here:
         Creacio_Actualitzar_Ruta r = new Creacio_Actualitzar_Ruta(BD,LbelUsuario.getText(),tablaRutes);
         r.setVisible(true);
         r.btnActualitzar.setEnabled(false);
@@ -319,7 +332,6 @@ public class RutesUsuari extends javax.swing.JFrame {
                 r.setTitle("Actualitzador");
             }
         }
-
     }//GEN-LAST:event_BntActualitzarActionPerformed
 
     private void BtnBorraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBorraActionPerformed
@@ -356,6 +368,67 @@ public class RutesUsuari extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_BtnBorraActionPerformed
+
+    private void BtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarActionPerformed
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy");
+        Date date1 = jDateChooser1.getDate();
+        Date date2 = jDateChooser2.getDate();
+        String dateS1 = null;
+        String dateS2 = null;
+        if(date1 != null)
+            dateS1 = sdf.format(date1);
+            
+        if(date2 != null)
+            dateS2 = sdf.format(date2);
+
+        String nom = lbBusqueda.getText();
+
+        try {
+            List<Ruta> RutesFiltrades = BD.getRutesFiltrades(nom , dateS1 , dateS2 , usuString );
+
+            String[] columnes = {"Titol", "Descripcio", "Distancia", "Temps", "Data Creacio ", "Dificultat", "Valoracio Mitjana"};
+            String[][] dades = new String[RutesFiltrades.size()][columnes.length];
+            int i = 0;
+
+            for (Ruta ruta : RutesFiltrades) {
+                dades[i][0] = ruta.getTitol();
+                dades[i][1] = ruta.getDescripcio();
+                dades[i][2] = String.valueOf(ruta.getDistancia());
+                dades[i][3] = String.valueOf(ruta.getTemps());
+                dades[i][4] = String.valueOf(ruta.getDataCreacio());
+                dades[i][5] = String.valueOf(ruta.getDificultat());
+                dades[i][6] = String.valueOf(ruta.getValoracioMitjana());
+                i++;
+            }
+            tablaRutes.setModel(new javax.swing.table.DefaultTableModel(dades, columnes));
+            tablaRutes.setDefaultEditor(Object.class, null);
+
+            tablaRutes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+            
+
+        } catch (GestorBDExceptionTOT | ExceptionTOT e) {
+            JOptionPane.showMessageDialog(this, "Error al filtra");
+            e.printStackTrace();
+        }
+
+
+
+        System.out.println(dateS1 + " ----- "+ dateS2);
+
+
+    }//GEN-LAST:event_BtnBuscarActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        lbBusqueda.setText("");
+        jDateChooser1.setDate(null);
+        jDateChooser2.setDate(null);
+        OmpleInfoUsuari(LbelUsuario.getText());
+        
+
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     
     private void tablaRutesMouseClicked(java.awt.event.MouseEvent evt) {                                            

@@ -4,7 +4,9 @@
  */
 package p_interficiepersistencia;
 
+import java.security.Timestamp;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.milaifontanals.ExceptionTOT;
@@ -107,4 +109,12 @@ public interface IGestorBDWiki {
      */
     boolean modificarPunt(Punts punt) throws GestorBDExceptionTOT, ExceptionTOT;
     
+
+    /**
+     * Retorna la llista de rutes filtrades.
+     * @throws GestorBDExceptionTOT
+     */
+    List<Ruta> getRutesFiltrades(String Titol , String data1 , String data2  , String usuario) throws GestorBDExceptionTOT, ExceptionTOT;
+
+
 }
