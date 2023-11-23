@@ -25,6 +25,7 @@ public class RutesUsuari extends javax.swing.JFrame {
      */
 
     private static List<Ruta> ruteList = null;
+    private static List<Punts> puntsList = null;
     private static String usuString;
     
    public RutesUsuari() {
@@ -39,8 +40,15 @@ public class RutesUsuari extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         setTitle("WikiLoc - Rutes de l'usuari " + usuari);    
-        OmpleInfoUsuari(usuari); 
+        OmpleInfoUsuari(usuari);
+        try {
+            puntsList = BD.getTotsPunts();
+        } catch (GestorBDExceptionTOT | ExceptionTOT e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
+
 
 
     public static void OmpleInfoUsuari(String usuari) {
@@ -79,6 +87,10 @@ public class RutesUsuari extends javax.swing.JFrame {
 
         BtnBorra.setEnabled(false);
         BntActualitzar.setEnabled(false);
+
+        btnC_Punt.setEnabled(false);
+        btnB_punt.setEnabled(false);
+        btnA_punt.setEnabled(false);
 
 
     }
@@ -206,6 +218,11 @@ public class RutesUsuari extends javax.swing.JFrame {
 
             }
         ));
+        tablepunts.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablepuntsMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tablepunts);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Busqueda"));
@@ -493,19 +510,118 @@ public class RutesUsuari extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnB_puntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnB_puntActionPerformed
-        // TODO add your handling code here:
+
+        int id_ruta = 0;
+        int fila = tablaRutes.getSelectedRow();
+        String nomruta = tablaRutes.getValueAt(fila, 0).toString();
+
+        for (Ruta ruta : ruteList) {
+            if (ruta.getTitol().equals(nomruta)){
+                id_ruta = ruta.getId_Ruta();
+            }
+        }
+
+        int num_punt = tablepunts.getSelectedRow();
+        String nom_punt = tablepunts.getValueAt(num_punt, 0).toString();
+
+        for (Punts punt : puntsList) {
+            if (punt.getNom().equals(nom_punt)){
+                int respuesta = JOptionPane.showConfirmDialog(null, "¿ Vols eliminar aquest Punt ?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                if(respuesta == JOptionPane.YES_OPTION){
+                    try {
+                        boolean fet = BD.borraPunt(punt.getNumPunt(), id_ruta);
+                        if (fet) {
+                            JOptionPane.showMessageDialog(this, "Punt borrat correctament");
+                            BD.validarCanvis();
+                            getPunts();
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(this, "No s'ha pogut borrar el punt");
+                        }
+                    } catch (GestorBDExceptionTOT | ExceptionTOT e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+
+
     }//GEN-LAST:event_btnB_puntActionPerformed
 
     private void btnA_puntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnA_puntActionPerformed
         // TODO add your handling code here:
+
+        //crear una pantalla de creacio de punt
+        
+        int id_ruta = 0;
+        int fila = tablaRutes.getSelectedRow();
+        String nomruta = tablaRutes.getValueAt(fila, 0).toString();
+        
+        for (Ruta ruta : ruteList) {
+            if (ruta.getTitol().equals(nomruta)){
+                id_ruta = ruta.getId_Ruta();
+            }
+        }
+        int num_punt = tablepunts.getSelectedRow();
+        String nom_punt = tablepunts.getValueAt(num_punt, 0).toString();
+        for (Punts punt : puntsList) {
+            if (punt.getNom().equals(nom_punt)){
+                Crear_Actualitzar_punts p = new Crear_Actualitzar_punts(punt , BD , id_ruta , tablepunts);
+                p.setVisible(true);
+                p.btnCrear.setEnabled(false);
+                p.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                p.setTitle("Actualitzar");
+            }
+        }
+
     }//GEN-LAST:event_btnA_puntActionPerformed
 
     private void btnC_PuntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnC_PuntActionPerformed
         // TODO add your handling code here:
+
+        int id_ruta = 0;
+        int fila = tablaRutes.getSelectedRow();
+        String nomruta = tablaRutes.getValueAt(fila, 0).toString();
+
+        for (Ruta ruta : ruteList) {
+            if (ruta.getTitol().equals(nomruta)){
+                id_ruta = ruta.getId_Ruta();
+            }
+        }
+
+        //crear una pantalla de creacio de punt
+        Crear_Actualitzar_punts p = new Crear_Actualitzar_punts(BD , id_ruta , tablepunts);
+        p.setVisible(true);
+        p.btnActualitar.setEnabled(false);
+        p.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        p.setTitle("Creacio");
+
     }//GEN-LAST:event_btnC_PuntActionPerformed
 
+    private void tablepuntsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablepuntsMouseClicked
+        // TODO add your handling code here:
+
+        if (tablepunts.getSelectedRow() == -1) {
+            btnB_punt.setEnabled(false);
+            btnA_punt.setEnabled(false);
+        }
+        else{
+            btnB_punt.setEnabled(true);
+            btnA_punt.setEnabled(true);
+        }
+
+
+
+    }//GEN-LAST:event_tablepuntsMouseClicked
+
     
+    
+
     private void tablaRutesMouseClicked(java.awt.event.MouseEvent evt) {                                            
+        getPunts();
+    }
+    public static void getPunts() {
         int fila = tablaRutes.getSelectedRow();
 
         String nomruta = tablaRutes.getValueAt(fila, 0).toString();
@@ -542,13 +658,13 @@ public class RutesUsuari extends javax.swing.JFrame {
         if (fila == -1) {
             BtnBorra.setEnabled(false);
             BntActualitzar.setEnabled(false);
+            btnC_Punt.setEnabled(false);
         }
         else{
             BtnBorra.setEnabled(true);
             BntActualitzar.setEnabled(true);
+            btnC_Punt.setEnabled(true);
         }
-        
-        
     }                                       
 
     /**
@@ -593,9 +709,9 @@ public class RutesUsuari extends javax.swing.JFrame {
     private javax.swing.JButton BtnBuscar;
     private static javax.swing.JButton BtnCrear;
     private static javax.swing.JLabel LbelUsuario;
-    private javax.swing.JButton btnA_punt;
-    private javax.swing.JButton btnB_punt;
-    private javax.swing.JButton btnC_Punt;
+    private static javax.swing.JButton btnA_punt;
+    private static javax.swing.JButton btnB_punt;
+    private static javax.swing.JButton btnC_Punt;
     private javax.swing.JButton jButton1;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private com.toedter.calendar.JDateChooser jDateChooser2;
@@ -609,6 +725,6 @@ public class RutesUsuari extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField lbBusqueda;
     private static javax.swing.JTable tablaRutes;
-    private javax.swing.JTable tablepunts;
+    private static javax.swing.JTable tablepunts;
     // End of variables declaration//GEN-END:variables
 }

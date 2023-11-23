@@ -117,4 +117,7 @@ public interface IGestorBDWiki {
     List<Ruta> getRutesFiltrades(String Titol , String data1 , String data2  , String usuario) throws GestorBDExceptionTOT, ExceptionTOT;
 
 
+    List<Punts> getTotsPunts() throws GestorBDExceptionTOT, ExceptionTOT;
+
+
 }
