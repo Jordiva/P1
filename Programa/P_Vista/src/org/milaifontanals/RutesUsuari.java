@@ -621,6 +621,7 @@ public class RutesUsuari extends javax.swing.JFrame {
     private void tablaRutesMouseClicked(java.awt.event.MouseEvent evt) {                                            
         getPunts();
     }
+    
     public static void getPunts() {
         int fila = tablaRutes.getSelectedRow();
 
@@ -659,11 +660,19 @@ public class RutesUsuari extends javax.swing.JFrame {
             BtnBorra.setEnabled(false);
             BntActualitzar.setEnabled(false);
             btnC_Punt.setEnabled(false);
+            
+              btnB_punt.setEnabled(true);
+            btnA_punt.setEnabled(true);
+
         }
         else{
             BtnBorra.setEnabled(true);
             BntActualitzar.setEnabled(true);
             btnC_Punt.setEnabled(true);
+            
+             btnB_punt.setEnabled(false);
+            btnA_punt.setEnabled(false);
+          
         }
     }                                       
 

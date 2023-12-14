@@ -84,11 +84,11 @@ public class Crear_Actualitzar_punts extends javax.swing.JFrame {
 
 
 
-    private Boolean FetNom = false;
-    private Boolean FetDescripcio = false;
-    private Boolean FetLat = false;
-    private Boolean FetLong = false;
-    private Boolean FetAlti = false;
+    private Boolean FetNom = true;
+    private Boolean FetDescripcio = true;
+    private Boolean FetLat = true;
+    private Boolean FetLong = true;
+    private Boolean FetAlti = true;
 
 
     boolean isInteger(String text) {
@@ -385,7 +385,7 @@ public class Crear_Actualitzar_punts extends javax.swing.JFrame {
     private void txtNomKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNomKeyReleased
         // TODO add your handling code here:
         
-        FetNom= txtNom.getText().length() > 0;
+        FetNom = txtNom.getText().length() > 0;
         if(!FetNom)
             txtNom.setBackground(Color.RED);
         else
