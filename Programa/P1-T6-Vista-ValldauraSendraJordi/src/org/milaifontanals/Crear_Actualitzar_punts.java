@@ -300,9 +300,9 @@ public class Crear_Actualitzar_punts extends javax.swing.JFrame {
             try {
                 String nom = txtNom.getText();
                 String descripcio = txtDescripcio.getText();
-                int latitud = Integer.parseInt(txtLat.getText());
-                int longitud = Integer.parseInt(txtLong.getText());
-                int altitud = Integer.parseInt(txtAlti.getText());
+                float latitud = Float.parseFloat(txtLat.getText());
+                float longitud = Float.parseFloat(txtLong.getText());
+                float altitud = Float.parseFloat(txtAlti.getText());
                 int tipus = cmbTipus.getSelectedIndex()+1;
 
                 Punts punt = new Punts( num_punt , ID_ruta, tipus, nom, descripcio, null, latitud, longitud, altitud);

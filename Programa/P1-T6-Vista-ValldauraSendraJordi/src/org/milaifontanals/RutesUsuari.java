@@ -18,6 +18,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -99,7 +101,7 @@ public class RutesUsuari extends javax.swing.JFrame {
 
         BtnBorra.setEnabled(false);
         BntActualitzar.setEnabled(false);
-
+        Imprimir.setEnabled(false);
         btnC_Punt.setEnabled(false);
         btnB_punt.setEnabled(false);
         btnA_punt.setEnabled(false);
@@ -538,6 +540,12 @@ public class RutesUsuari extends javax.swing.JFrame {
 
     private void btnB_puntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnB_puntActionPerformed
 
+        
+        try {
+            puntsList = BD.getTotsPunts();
+        } catch (GestorBDExceptionTOT ex) {
+        } catch (ExceptionTOT ex) {
+        }
         int id_ruta = 0;
         int fila = tablaRutes.getSelectedRow();
         String nomruta = tablaRutes.getValueAt(fila, 0).toString();
@@ -584,7 +592,11 @@ public class RutesUsuari extends javax.swing.JFrame {
         int id_ruta = 0;
         int fila = tablaRutes.getSelectedRow();
         String nomruta = tablaRutes.getValueAt(fila, 0).toString();
-        
+        try {
+            puntsList = BD.getTotsPunts();
+        } catch (GestorBDExceptionTOT ex) {
+        } catch (ExceptionTOT ex) {
+        }
         for (Ruta ruta : ruteList) {
             if (ruta.getTitol().equals(nomruta)){
                 id_ruta = ruta.getId_Ruta();
@@ -686,6 +698,7 @@ public class RutesUsuari extends javax.swing.JFrame {
         for (Ruta ruta : ruteList) {
             if (ruta.getTitol().equals(nomruta)){
                 id_ruta = ruta.getId_Ruta();
+                System.out.println(id_ruta);
                 break;
             }
         }
@@ -698,15 +711,16 @@ public class RutesUsuari extends javax.swing.JFrame {
 
 
 
-        
+         
         
     }//GEN-LAST:event_ImprimirActionPerformed
 
     private void informesJRS(int  id_ruta) throws IOException{
 
         int BUFFER_SIZE = 4096;
+        Date d = new Date();
         String url = urlJRS + "P1.pdf"
-                + "?IdRuta=" + id_ruta;      // Emplenem el paràmetre "codi" de l'informe
+                 + "?IdRuta=" + id_ruta;      // Emplenem el paràmetre "codi" de l'informe
         // Si hi ha més paràmetres a passar, cal concatenar-los com "&" com:
         // + "&nomParametre=valor&nomParametre=valor..."
         URL obj = new URL(url);
@@ -739,11 +753,6 @@ public class RutesUsuari extends javax.swing.JFrame {
                 }
             }
 
-//            System.out.println("Content-Type = " + contentType);
-//            System.out.println("Content-Disposition = " + disposition);
-//            System.out.println("Content-Length = " + contentLength);
-//            System.out.println("fileName = " + fileName);
-//            System.out.println("url = " + url);
 
             // Obrim InputStream des de HTTP connection
             InputStream inputStream = con.getInputStream();
@@ -768,10 +777,12 @@ public class RutesUsuari extends javax.swing.JFrame {
                 }
             }
         } else {
-//            txtInfo.setText("Mètode 'GET' : " + url);
-//            txtInfo.setText(txtInfo.getText()+"\nCodi resposta: " + responseCode);
-//            txtInfo.setText(txtInfo.getText()+"\nCap fitxer a descarregar");
-            JOptionPane.showMessageDialog(rootPane, "Error en descarregar");
+            
+            System.out.println("Mètode 'GET' : " + url);;
+        
+            System.out.println("\nCodi resposta: " + responseCode);
+           System.out.println("\nCap fitxer a descarregar");
+            JOptionPane.showMessageDialog(rootPane, "Error en crear informe");
         }
         con.disconnect();
     }
@@ -781,8 +792,21 @@ public class RutesUsuari extends javax.swing.JFrame {
     
     
 
-    private void tablaRutesMouseClicked(java.awt.event.MouseEvent evt) {                                            
+    private void tablaRutesMouseClicked(java.awt.event.MouseEvent evt) {
+                int fila = tablaRutes.getSelectedRow();
+        if( fila == -1){
+            BtnBorra.setEnabled(false);
+            BntActualitzar.setEnabled(false);
+            btnC_Punt.setEnabled(false);
+            Imprimir.setEnabled(false);
+             btnB_punt.setEnabled(false);
+            btnA_punt.setEnabled(false);
+            btnA_punt.setEnabled(false);
+            DefaultTableModel tableModel = (DefaultTableModel) tablepunts.getModel();
+            tableModel.setRowCount(0);
+        }else{
         getPunts();
+        }
     }
     
     public static void getPunts() {
@@ -823,6 +847,7 @@ public class RutesUsuari extends javax.swing.JFrame {
             BtnBorra.setEnabled(false);
             BntActualitzar.setEnabled(false);
             btnC_Punt.setEnabled(false);
+            Imprimir.setEnabled(false);
             
               btnB_punt.setEnabled(true);
             btnA_punt.setEnabled(true);
@@ -832,7 +857,7 @@ public class RutesUsuari extends javax.swing.JFrame {
             BtnBorra.setEnabled(true);
             BntActualitzar.setEnabled(true);
             btnC_Punt.setEnabled(true);
-            
+            Imprimir.setEnabled(true);
              btnB_punt.setEnabled(false);
             btnA_punt.setEnabled(false);
           
@@ -880,7 +905,7 @@ public class RutesUsuari extends javax.swing.JFrame {
     private static javax.swing.JButton BtnBorra;
     private javax.swing.JButton BtnBuscar;
     private static javax.swing.JButton BtnCrear;
-    private javax.swing.JButton Imprimir;
+    private static javax.swing.JButton Imprimir;
     private static javax.swing.JLabel LbelUsuario;
     private static javax.swing.JButton btnA_punt;
     private static javax.swing.JButton btnB_punt;
