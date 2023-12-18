@@ -4,9 +4,20 @@
  */
 package org.milaifontanals;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -41,6 +52,7 @@ public class RutesUsuari extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setTitle("WikiLoc - Rutes de l'usuari " + usuari);    
         OmpleInfoUsuari(usuari);
+        CarregarJASPER();
         try {
             puntsList = BD.getTotsPunts();
         } catch (GestorBDExceptionTOT | ExceptionTOT e) {
@@ -113,6 +125,7 @@ public class RutesUsuari extends javax.swing.JFrame {
         BtnCrear = new javax.swing.JButton();
         BntActualitzar = new javax.swing.JButton();
         BtnBorra = new javax.swing.JButton();
+        Imprimir = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablepunts = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
@@ -175,6 +188,13 @@ public class RutesUsuari extends javax.swing.JFrame {
             }
         });
 
+        Imprimir.setText("Imprimir");
+        Imprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ImprimirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -182,17 +202,19 @@ public class RutesUsuari extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(BtnBorra))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addComponent(BtnCrear)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 14, Short.MAX_VALUE)
-                        .addComponent(BntActualitzar)))
+                        .addGap(14, 14, 14)
+                        .addComponent(BntActualitzar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(Imprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(23, 23, 23)
+                                    .addComponent(BtnCrear))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(18, 18, 18)
+                                    .addComponent(BtnBorra))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -202,7 +224,9 @@ public class RutesUsuari extends javax.swing.JFrame {
                 .addComponent(BtnCrear)
                 .addGap(45, 45, 45)
                 .addComponent(BntActualitzar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                .addGap(34, 34, 34)
+                .addComponent(Imprimir)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addComponent(BtnBorra)
                 .addGap(27, 27, 27))
         );
@@ -370,17 +394,20 @@ public class RutesUsuari extends javax.swing.JFrame {
                 .addGap(8, 8, 8)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(35, 35, 35)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(49, 49, 49))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(49, 49, 49))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         pack();
@@ -614,7 +641,143 @@ public class RutesUsuari extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_tablepuntsMouseClicked
+    private String urlJRS;
+    private String userJRS;
+    private String passwordJRS;
 
+    //TODO
+    private void CarregarJASPER(){
+        String fitxerConfigJRS = "informesJRS.xml";
+        try {
+            Properties props = new Properties();
+            props.loadFromXML(new FileInputStream(fitxerConfigJRS));
+            String[] claus = {"url", "user", "password"};
+            String[] valors = new String[3];
+            for (int i = 0; i < claus.length; i++) {
+                valors[i] = props.getProperty(claus[i]);
+                if (valors[i] == null || valors[i].isEmpty()) {
+                    JOptionPane.showMessageDialog(this,"No s'ha trobat la clau " + claus[i] + " al fitxer " + fitxerConfigJRS);
+                }
+            }
+            urlJRS = valors[0];
+            userJRS = valors[1];
+            passwordJRS = valors[2];
+            JOptionPane.showMessageDialog(this, "Fitxer de configuració " + fitxerConfigJRS + " carregat correctament");
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "No s'ha trobat el fitxer de configuració " + fitxerConfigJRS);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error en llegir el fitxer de configuració " + fitxerConfigJRS);
+        }
+    }
+    
+
+
+    
+    
+    private void ImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ImprimirActionPerformed
+        // TODO add your handling code here:
+        
+        
+
+        int id_ruta = 0;
+        int fila = tablaRutes.getSelectedRow();
+        String nomruta = tablaRutes.getValueAt(fila, 0).toString();
+
+        for (Ruta ruta : ruteList) {
+            if (ruta.getTitol().equals(nomruta)){
+                id_ruta = ruta.getId_Ruta();
+                break;
+            }
+        }
+
+        try {
+            informesJRS(id_ruta);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+
+
+        
+        
+    }//GEN-LAST:event_ImprimirActionPerformed
+
+    private void informesJRS(int  id_ruta) throws IOException{
+
+        int BUFFER_SIZE = 4096;
+        String url = urlJRS + "P1.pdf"
+                + "?IdRuta=" + id_ruta;      // Emplenem el paràmetre "codi" de l'informe
+        // Si hi ha més paràmetres a passar, cal concatenar-los com "&" com:
+        // + "&nomParametre=valor&nomParametre=valor..."
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        String autenticacio = Base64.getEncoder().encodeToString((userJRS + ":" + passwordJRS).getBytes());
+        con.setRequestProperty("Authorization", "Basic " + autenticacio);
+        int responseCode = con.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            String fileName = "";
+            String disposition = con.getHeaderField("Content-Disposition");
+            String contentType = con.getContentType();
+            int contentLength = con.getContentLength();
+
+            if (disposition != null) {
+                // Obtenir el nom del fitxer a partir de la capçalera (Content-Disposition)
+                int index = disposition.indexOf("filename=");
+                if (index > 0) {
+                    fileName = disposition.substring(index + 10,
+                            disposition.length() - 1);
+                }
+            } else {
+                // Obtenir el nom del fitxer de dins la URL
+                int posArguments = url.lastIndexOf("?");
+                if (posArguments == -1) { // No hi ha arguments
+                    fileName = url.substring(url.lastIndexOf("/") + 1,
+                            url.length());
+                } else { // Hi ha arguments i cal eliminar-los per obtenir el nom del fitxer
+                    fileName = url.substring(url.lastIndexOf("/") + 1, posArguments);
+                }
+            }
+
+//            System.out.println("Content-Type = " + contentType);
+//            System.out.println("Content-Disposition = " + disposition);
+//            System.out.println("Content-Length = " + contentLength);
+//            System.out.println("fileName = " + fileName);
+//            System.out.println("url = " + url);
+
+            // Obrim InputStream des de HTTP connection
+            InputStream inputStream = con.getInputStream();
+            // Obrim OutputStream per enregistrar el fitxer
+            FileOutputStream outputStream = new FileOutputStream(fileName);
+            // Llegim i escrivim
+            int bytesRead = -1;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.close();
+            inputStream.close();
+
+//            System.out.println("Arxiu descarregat");
+            // Intentem obrir-lo en alguna aplicació del SO
+            if (Desktop.isDesktopSupported()) {
+                try {
+                    Desktop.getDesktop().open(new File(fileName));
+                } catch (IOException ex) {
+                    System.out.println("No hi ha aplicacions disponibles per obrir el fitxer");
+                }
+            }
+        } else {
+//            txtInfo.setText("Mètode 'GET' : " + url);
+//            txtInfo.setText(txtInfo.getText()+"\nCodi resposta: " + responseCode);
+//            txtInfo.setText(txtInfo.getText()+"\nCap fitxer a descarregar");
+            JOptionPane.showMessageDialog(rootPane, "Error en descarregar");
+        }
+        con.disconnect();
+    }
+
+
+    
     
     
 
@@ -717,6 +880,7 @@ public class RutesUsuari extends javax.swing.JFrame {
     private static javax.swing.JButton BtnBorra;
     private javax.swing.JButton BtnBuscar;
     private static javax.swing.JButton BtnCrear;
+    private javax.swing.JButton Imprimir;
     private static javax.swing.JLabel LbelUsuario;
     private static javax.swing.JButton btnA_punt;
     private static javax.swing.JButton btnB_punt;
